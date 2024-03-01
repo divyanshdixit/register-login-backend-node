@@ -39,6 +39,14 @@ app.post('/register', async (req, res) => {
         const {email, username, password} = req.body;
         // hash password to protect route:
         const hashPassword = await bcrypt.hash(password, 10);
+        const isUserEmailExists = await User.findOne({email})
+        const isUserNameExists = await User.findOne({username})
+        if(isUserNameExists){
+            return res.status(400).json({message: 'Username already exists!'});
+        }
+        if(isUserEmailExists){
+            return res.status(400).json({message: 'Email already exists!'});
+        }
         const newUser = new User({ email, username, password: hashPassword});
         await newUser.save();
         res.status(201).json({message: 'User created successfully!', value: newUser})
